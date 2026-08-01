@@ -1,10 +1,10 @@
-package com.quantferox.katie;
+package com.quantferox.lumeo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class KatieApplicationTests {
+class LumeoApplicationTests {
 
 	@Test
 	void contextLoads() {
