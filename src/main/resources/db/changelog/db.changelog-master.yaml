@@ -1,0 +1,21 @@
+databaseChangeLog:
+  # Each file = one logical migration unit.
+  # Never edit a released changeset — add a new one instead.
+  - include:
+      file: db/changelog/migrations/001-create-users.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: db/changelog/migrations/002-create-categories.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: db/changelog/migrations/003-create-products.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: db/changelog/migrations/004-create-orders.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: db/changelog/migrations/005-create-order-items.yaml
+      relativeToChangelogFile: false
+  - include:
+      file: db/changelog/migrations/006-create-audit-logs.yaml
+      relativeToChangelogFile: false

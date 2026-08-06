@@ -1,0 +1,97 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 005-create-order-items
+      author: quantferox
+      comment: "Order items: price snapshot at purchase time, FK to orders and products"
+      changes:
+
+        - createTable:
+            tableName: order_items
+            columns:
+
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: order_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+
+              # Denormalised price snapshot — intentional
+              - column:
+                  name: unit_price
+                  type: DECIMAL(12, 2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_name
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+
+        # ── Indexes & FKs ──────────────────────────────────────────────
+        - createIndex:
+            tableName: order_items
+            indexName: idx_order_item_order
+            columns:
+              - column:
+                  name: order_id
+
+        - addForeignKeyConstraint:
+            baseTableName: order_items
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            constraintName: fk_order_item_order
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: order_items
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_order_item_product
+            onDelete: RESTRICT
+
+      rollback:
+        - dropTable:
+            tableName: order_items

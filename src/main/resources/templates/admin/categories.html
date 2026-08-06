@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Categories — Lumeo Admin</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+  <link rel="stylesheet" th:href="@{/css/admin.css}"/>
+</head>
+<body class="admin-body">
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <a class="brand" th:href="@{/admin}">&#9749; Lumeo Admin</a>
+    <nav class="admin-nav">
+      <a th:href="@{/admin}"            class="nav-item">&#128202; Dashboard</a>
+      <a th:href="@{/admin/products}"   class="nav-item">&#128722; Products</a>
+      <a th:href="@{/admin/categories}" class="nav-item active">&#128204; Categories</a>
+      <a th:href="@{/admin/orders}"     class="nav-item">&#128230; Orders</a>
+      <a th:href="@{/admin/users}"      class="nav-item">&#128100; Users</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <h1>Categories</h1>
+      <a th:href="@{/admin/categories/new}" class="btn btn-primary btn-sm">+ New Category</a>
+    </header>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>ID</th><th>Name</th><th>Slug</th><th>Parent</th><th>Active</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="cat : ${categories}">
+          <td th:text="${cat.id}">1</td>
+          <td th:text="${cat.name}">Name</td>
+          <td th:text="${cat.slug}">slug</td>
+          <td th:text="${cat.parentName} ?: '—'">—</td>
+          <td>
+            <span th:if="${cat.active}" class="badge badge-active">Yes</span>
+            <span th:unless="${cat.active}" class="badge badge-inactive">No</span>
+          </td>
+          <td class="action-cell">
+            <a th:href="@{/admin/categories/{id}/edit(id=${cat.id})}" class="btn btn-sm btn-outline">Edit</a>
+            <form method="post"
+                  th:action="@{/admin/categories/{id}/delete(id=${cat.id})}"
+                  style="display:inline"
+                  onsubmit="return confirm('Delete this category and deactivate its products?')">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <button class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        <tr th:if="${categories.isEmpty()}">
+          <td colspan="6" class="empty-cell">No categories found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

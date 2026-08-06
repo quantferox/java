@@ -1,0 +1,82 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 006-create-audit-logs
+      author: quantferox
+      comment: "Immutable audit log table — compliance requirement"
+      changes:
+
+        - createTable:
+            tableName: audit_logs
+            columns:
+
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: actor
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: action
+                  type: VARCHAR(80)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: entity_type
+                  type: VARCHAR(80)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: entity_id
+                  type: BIGINT
+
+              - column:
+                  name: payload
+                  type: CLOB
+
+              - column:
+                  name: ip_address
+                  type: VARCHAR(50)
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: audit_logs
+            indexName: idx_audit_entity
+            columns:
+              - column:
+                  name: entity_type
+              - column:
+                  name: entity_id
+
+        - createIndex:
+            tableName: audit_logs
+            indexName: idx_audit_actor
+            columns:
+              - column:
+                  name: actor
+
+        - createIndex:
+            tableName: audit_logs
+            indexName: idx_audit_created_at
+            columns:
+              - column:
+                  name: created_at
+
+      rollback:
+        - dropTable:
+            tableName: audit_logs

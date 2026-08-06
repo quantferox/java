@@ -1,0 +1,138 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 003-create-products
+      author: quantferox
+      comment: "Products table with FK to categories, price columns, stock"
+      changes:
+
+        - createTable:
+            tableName: products
+            columns:
+
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: slug
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: sku
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: VARCHAR(2000)
+
+              - column:
+                  name: price
+                  type: DECIMAL(12, 2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: compare_price
+                  type: DECIMAL(12, 2)
+
+              - column:
+                  name: stock_quantity
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: image_url
+                  type: VARCHAR(500)
+
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: featured
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: category_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+        # ── Constraints & Indexes ──────────────────────────────────────
+        - addUniqueConstraint:
+            tableName: products
+            columnNames: sku
+            constraintName: uk_product_sku
+
+        - addUniqueConstraint:
+            tableName: products
+            columnNames: slug
+            constraintName: uk_product_slug
+
+        - createIndex:
+            tableName: products
+            indexName: idx_product_category
+            columns:
+              - column:
+                  name: category_id
+
+        - createIndex:
+            tableName: products
+            indexName: idx_product_slug
+            columns:
+              - column:
+                  name: slug
+
+        - addForeignKeyConstraint:
+            baseTableName: products
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_product_category
+            onDelete: RESTRICT
+
+      rollback:
+        - dropTable:
+            tableName: products

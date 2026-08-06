@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="${errorCode} + ' — Lumeo'">404 — Lumeo</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body class="auth-page">
+<div class="auth-card" style="text-align:center">
+  <a class="brand" th:href="@{/shop}">&#9749; Lumeo</a>
+  <div style="font-size:4rem;font-weight:900;color:#4f46e5;margin:1rem 0"
+       th:text="${errorCode}">404</div>
+  <h1 style="font-size:1.4rem;margin-bottom:.75rem" th:text="${errorTitle}">Not Found</h1>
+  <p style="color:#6b7280;margin-bottom:1.5rem" th:text="${errorMessage}">Page not found.</p>
+  <a th:href="@{/shop}" class="btn btn-primary">← Back to Shop</a>
+</div>
+</body>
+</html>

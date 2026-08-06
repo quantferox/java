@@ -1,0 +1,37 @@
+# ──────────────────────────────────────────────────────────────
+# Profile: prod
+# Real datasource via env vars, no H2 console, SQL silent,
+# strict rate limit, Swagger disabled
+# ──────────────────────────────────────────────────────────────
+
+spring:
+  datasource:
+    url:      ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  h2:
+    console:
+      enabled: false
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+logging:
+  level:
+    root: WARN
+    com.quantferox.lumeo: INFO
+    liquibase: INFO
+
+lumeo:
+  rate-limit:
+    capacity: 100
+    refill-tokens: 100
+    refill-seconds: 60

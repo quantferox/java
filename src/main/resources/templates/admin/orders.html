@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Orders — Lumeo Admin</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+  <link rel="stylesheet" th:href="@{/css/admin.css}"/>
+</head>
+<body class="admin-body">
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <a class="brand" th:href="@{/admin}">&#9749; Lumeo Admin</a>
+    <nav class="admin-nav">
+      <a th:href="@{/admin}"            class="nav-item">&#128202; Dashboard</a>
+      <a th:href="@{/admin/products}"   class="nav-item">&#128722; Products</a>
+      <a th:href="@{/admin/categories}" class="nav-item">&#128204; Categories</a>
+      <a th:href="@{/admin/orders}"     class="nav-item active">&#128230; Orders</a>
+      <a th:href="@{/admin/users}"      class="nav-item">&#128100; Users</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <h1>Orders</h1>
+    </header>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+    <!-- Status filter -->
+    <div class="filter-bar">
+      <a th:href="@{/admin/orders}"
+         th:classappend="${selected == null} ? 'active'" class="filter-btn">All</a>
+      <a th:each="s : ${statuses}"
+         th:href="@{/admin/orders(status=${s})}"
+         th:text="${s}"
+         th:classappend="${s == selected} ? 'active'" class="filter-btn">Status</a>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Number</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <tr th:each="o : ${orders.content}">
+          <td th:text="${o.orderNumber}">ORD</td>
+          <td th:text="${o.userFullName}">User</td>
+          <td th:text="'$' + ${o.totalAmount}">$0</td>
+          <td><span class="badge" th:text="${o.status}"
+                   th:classappend="'badge-' + ${o.status.toString().toLowerCase()}">PENDING</span></td>
+          <td th:text="${#temporals.format(o.createdAt, 'dd MMM yyyy')}">Date</td>
+          <td>
+            <a th:href="@{/admin/orders/{id}(id=${o.id})}" class="btn btn-sm btn-outline">View</a>
+          </td>
+        </tr>
+        <tr th:if="${orders.content.isEmpty()}">
+          <td colspan="6" class="empty-cell">No orders found.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <nav class="pagination" th:if="${orders.totalPages > 1}">
+      <a th:href="@{/admin/orders(page=${orders.page - 1}, status=${selected})}"
+         th:classappend="${orders.first} ? 'disabled'" class="page-link">&laquo;</a>
+      <span th:each="i : ${#numbers.sequence(0, orders.totalPages - 1)}">
+        <a th:href="@{/admin/orders(page=${i}, status=${selected})}"
+           th:text="${i + 1}"
+           th:classappend="${i == orders.page} ? 'active'" class="page-link">1</a>
+      </span>
+      <a th:href="@{/admin/orders(page=${orders.page + 1}, status=${selected})}"
+         th:classappend="${orders.last} ? 'disabled'" class="page-link">&raquo;</a>
+    </nav>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

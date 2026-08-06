@@ -1,0 +1,99 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 001-create-users
+      author: quantferox
+      comment: "Initial users table with auditing and role columns"
+      changes:
+
+        - createTable:
+            tableName: users
+            columns:
+
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              # ── Auditing (BaseEntity) ──────────────────────────────────
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              # ── User fields ────────────────────────────────────────────
+              - column:
+                  name: username
+                  type: VARCHAR(80)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: email
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: first_name
+                  type: VARCHAR(80)
+
+              - column:
+                  name: last_name
+                  type: VARCHAR(80)
+
+              - column:
+                  name: phone_number
+                  type: VARCHAR(30)
+
+              - column:
+                  name: role
+                  type: VARCHAR(20)
+                  defaultValue: ROLE_USER
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+
+        # ── Unique constraints ─────────────────────────────────────────
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: username
+            constraintName: uk_user_username
+
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: email
+            constraintName: uk_user_email
+
+      rollback:
+        - dropTable:
+            tableName: users

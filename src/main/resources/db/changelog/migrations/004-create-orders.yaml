@@ -1,0 +1,120 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 004-create-orders
+      author: quantferox
+      comment: "Orders table: status enum, shipping address, FK to users"
+      changes:
+
+        - createTable:
+            tableName: orders
+            columns:
+
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: order_number
+                  type: VARCHAR(40)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: total_amount
+                  type: DECIMAL(12, 2)
+                  constraints:
+                    nullable: false
+
+              # ── Shipping address ───────────────────────────────────────
+              - column:
+                  name: shipping_street
+                  type: VARCHAR(255)
+
+              - column:
+                  name: shipping_city
+                  type: VARCHAR(100)
+
+              - column:
+                  name: shipping_state
+                  type: VARCHAR(100)
+
+              - column:
+                  name: shipping_zip
+                  type: VARCHAR(20)
+
+              - column:
+                  name: shipping_country
+                  type: VARCHAR(60)
+
+              - column:
+                  name: notes
+                  type: VARCHAR(1000)
+
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+        # ── Constraints & Indexes ──────────────────────────────────────
+        - addUniqueConstraint:
+            tableName: orders
+            columnNames: order_number
+            constraintName: uk_order_number
+
+        - createIndex:
+            tableName: orders
+            indexName: idx_order_user
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            tableName: orders
+            indexName: idx_order_status
+            columns:
+              - column:
+                  name: status
+
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_order_user
+            onDelete: RESTRICT
+
+      rollback:
+        - dropTable:
+            tableName: orders

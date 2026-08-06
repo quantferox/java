@@ -1,0 +1,87 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 002-create-categories
+      author: quantferox
+      comment: "Categories table with self-referential parent FK"
+      changes:
+
+        - createTable:
+            tableName: categories
+            columns:
+
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: slug
+                  type: VARCHAR(120)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: VARCHAR(500)
+
+              - column:
+                  name: image_url
+                  type: VARCHAR(500)
+
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+
+              # Self-referential FK — resolved after table creation
+              - column:
+                  name: parent_id
+                  type: BIGINT
+
+        - addUniqueConstraint:
+            tableName: categories
+            columnNames: slug
+            constraintName: uk_category_slug
+
+        - addForeignKeyConstraint:
+            baseTableName: categories
+            baseColumnNames: parent_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_category_parent
+            onDelete: SET NULL
+
+      rollback:
+        - dropTable:
+            tableName: categories

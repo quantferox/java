@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Products — Lumeo Admin</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+  <link rel="stylesheet" th:href="@{/css/admin.css}"/>
+</head>
+<body class="admin-body">
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <a class="brand" th:href="@{/admin}">&#9749; Lumeo Admin</a>
+    <nav class="admin-nav">
+      <a th:href="@{/admin}"            class="nav-item">&#128202; Dashboard</a>
+      <a th:href="@{/admin/products}"   class="nav-item active">&#128722; Products</a>
+      <a th:href="@{/admin/categories}" class="nav-item">&#128204; Categories</a>
+      <a th:href="@{/admin/orders}"     class="nav-item">&#128230; Orders</a>
+      <a th:href="@{/admin/users}"      class="nav-item">&#128100; Users</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <h1>Products</h1>
+      <a th:href="@{/admin/products/new}" class="btn btn-primary btn-sm">+ New Product</a>
+    </header>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+    <!-- Search -->
+    <form method="get" th:action="@{/admin/products}" class="table-search">
+      <input type="text" name="q" th:value="${query}" placeholder="Search products…" class="form-control"/>
+      <button class="btn btn-primary btn-sm">Search</button>
+      <a th:href="@{/admin/products}" class="btn btn-outline btn-sm">Clear</a>
+    </form>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Name</th><th>SKU</th><th>Category</th>
+          <th>Price</th><th>Stock</th><th>Active</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="p : ${products.content}">
+          <td th:text="${p.id}">1</td>
+          <td>
+            <a th:href="@{/shop/product/{slug}(slug=${p.slug})}"
+               th:text="${p.name}" target="_blank">Name</a>
+          </td>
+          <td th:text="${p.sku}">SKU</td>
+          <td th:text="${p.categoryName}">Cat</td>
+          <td th:text="'$' + ${p.price}">$0</td>
+          <td th:text="${p.stockQuantity}"
+              th:classappend="${p.stockQuantity <= 5} ? 'qty-warn'">0</td>
+          <td>
+            <span th:if="${p.active}"  class="badge badge-active">Yes</span>
+            <span th:unless="${p.active}" class="badge badge-inactive">No</span>
+          </td>
+          <td class="action-cell">
+            <a th:href="@{/admin/products/{id}/edit(id=${p.id})}" class="btn btn-sm btn-outline">Edit</a>
+            <form method="post"
+                  th:action="@{/admin/products/{id}/delete(id=${p.id})}"
+                  style="display:inline"
+                  onsubmit="return confirm('Delete this product?')">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <button class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        <tr th:if="${products.content.isEmpty()}">
+          <td colspan="8" class="empty-cell">No products found.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav class="pagination" th:if="${products.totalPages > 1}">
+      <a th:href="@{/admin/products(page=${products.page - 1}, q=${query})}"
+         th:classappend="${products.first} ? 'disabled'" class="page-link">&laquo;</a>
+      <span th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}">
+        <a th:href="@{/admin/products(page=${i}, q=${query})}"
+           th:text="${i + 1}"
+           th:classappend="${i == products.page} ? 'active'" class="page-link">1</a>
+      </span>
+      <a th:href="@{/admin/products(page=${products.page + 1}, q=${query})}"
+         th:classappend="${products.last} ? 'disabled'" class="page-link">&raquo;</a>
+    </nav>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

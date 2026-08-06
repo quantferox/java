@@ -1,0 +1,38 @@
+spring:
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:h2:mem:lumeo_test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+
+lumeo:
+  jwt:
+    secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    expiration-ms: 86400000
+  rate-limit:
+    capacity: 10000
+    refill-tokens: 10000
+    refill-seconds: 60
+  # Disable scheduler jobs in tests
+  scheduler:
+    stock-check-ms: 999999999
+    stock-check-initial-ms: 999999999
+    daily-report-cron: "0 0 3 31 2 ?"  # never (Feb 31)
+
+logging:
+  level:
+    root: WARN
+    com.quantferox.lumeo: WARN
+    liquibase: WARN

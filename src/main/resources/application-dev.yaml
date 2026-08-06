@@ -1,0 +1,32 @@
+# ──────────────────────────────────────────────────────────────
+# Profile: dev  (active by default via application.yaml)
+# H2 in-memory, verbose SQL, Swagger open, devtools hot reload
+# ──────────────────────────────────────────────────────────────
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:lumeodb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  h2:
+    console:
+      enabled: true
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# Show all Liquibase changeset activity in dev
+logging:
+  level:
+    liquibase: DEBUG
+    com.quantferox.lumeo: DEBUG
+
+# Rate limit is generous in dev — 1000 req/min
+lumeo:
+  rate-limit:
+    capacity: 1000
+    refill-tokens: 1000
+    refill-seconds: 60

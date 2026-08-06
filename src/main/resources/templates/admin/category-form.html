@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="${isNew} ? 'New Category' : 'Edit Category'">Category — Lumeo Admin</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+  <link rel="stylesheet" th:href="@{/css/admin.css}"/>
+</head>
+<body class="admin-body">
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <a class="brand" th:href="@{/admin}">&#9749; Lumeo Admin</a>
+    <nav class="admin-nav">
+      <a th:href="@{/admin}"            class="nav-item">&#128202; Dashboard</a>
+      <a th:href="@{/admin/products}"   class="nav-item">&#128722; Products</a>
+      <a th:href="@{/admin/categories}" class="nav-item active">&#128204; Categories</a>
+      <a th:href="@{/admin/orders}"     class="nav-item">&#128230; Orders</a>
+      <a th:href="@{/admin/users}"      class="nav-item">&#128100; Users</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <h1 th:text="${isNew} ? 'New Category' : 'Edit Category'">Category</h1>
+      <a th:href="@{/admin/categories}" class="btn btn-outline btn-sm">← Back</a>
+    </header>
+
+    <form th:action="${isNew} ? @{/admin/categories/new} : @{/admin/categories/{id}/edit(id=${categoryId})}"
+          th:object="${category}"
+          method="post"
+          class="admin-form">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Name *</label>
+          <input id="name" type="text" th:field="*{name}" class="form-control"
+                 th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"/>
+          <span class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+        </div>
+        <div class="form-group">
+          <label for="slug">Slug *</label>
+          <input id="slug" type="text" th:field="*{slug}" class="form-control"
+                 th:classappend="${#fields.hasErrors('slug')} ? 'is-invalid'"/>
+          <span class="field-error" th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}"></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" th:field="*{description}" class="form-control" rows="3"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="imageUrl">Image URL</label>
+          <input id="imageUrl" type="text" th:field="*{imageUrl}" class="form-control"/>
+        </div>
+        <div class="form-group">
+          <label for="parentId">Parent Category</label>
+          <select id="parentId" th:field="*{parentId}" class="form-control">
+            <option value="">— None (root) —</option>
+            <option th:each="cat : ${allCats}"
+                    th:value="${cat.id}"
+                    th:text="${cat.name}">Cat</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row checkbox-row">
+        <label class="checkbox-label">
+          <input type="checkbox" th:field="*{active}"/> Active
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary"
+                th:text="${isNew} ? 'Create Category' : 'Save Changes'">Save</button>
+        <a th:href="@{/admin/categories}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

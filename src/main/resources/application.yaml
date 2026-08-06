@@ -1,3 +1,111 @@
 spring:
   application:
     name: lumeo
+
+  # Active profile — override with -Dspring.profiles.active=prod in production
+  profiles:
+    active: dev
+
+  # ── Datasource (H2 in-memory) ──────────────────────────────────────────────
+  datasource:
+    url: jdbc:h2:mem:lumeodb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+
+  # ── JPA ────────────────────────────────────────────────────────────────────
+  jpa:
+    hibernate:
+      # Liquibase owns the schema — Hibernate only validates it
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+
+  # ── Liquibase ───────────────────────────────────────────────────────────────
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+    # Set to true if you want Liquibase to drop and re-create on every start (dev only)
+    drop-first: false
+
+  # ── Thymeleaf ──────────────────────────────────────────────────────────────
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+
+  # ── Security (form login defaults — JWT for /api/**) ──────────────────────
+  security:
+    user:
+      name: admin
+      password: admin
+
+# ── Server ─────────────────────────────────────────────────────────────────
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# ── Actuator ───────────────────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: Lumeo E-Commerce
+    version: 1.0.0
+    description: Senior-level Spring Boot e-commerce platform
+
+# ── SpringDoc / OpenAPI ────────────────────────────────────────────────────
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+  show-actuator: true
+
+# ── Application-level properties ───────────────────────────────────────────
+lumeo:
+  jwt:
+    secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    expiration-ms: 86400000   # 24 h
+  rate-limit:
+    capacity: 200
+    refill-tokens: 200
+    refill-seconds: 60
+
+# ── Logging ────────────────────────────────────────────────────────────────
+logging:
+  level:
+    root: WARN
+    com.quantferox.lumeo: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%-5level) %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} : %msg%n"

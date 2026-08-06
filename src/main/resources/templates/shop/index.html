@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lumeo &mdash; Shop</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a class="brand" th:href="@{/shop}">&#9749; Lumeo</a>
+    <form class="search-form" method="get" th:action="@{/shop}">
+      <input type="text" name="q" placeholder="Search products…" th:value="${query}" class="search-input"/>
+      <button class="btn btn-primary btn-sm">Search</button>
+    </form>
+    <ul class="nav-links">
+      <li><a th:href="@{/shop}">Shop</a></li>
+      <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin}" class="badge-admin">Admin</a></li>
+      <li sec:authorize="isAnonymous()"><a th:href="@{/login}" class="btn btn-outline btn-sm">Login</a></li>
+      <li sec:authorize="isAuthenticated()">
+        <form method="post" th:action="@{/logout}" style="display:inline">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <button class="btn btn-outline btn-sm">Logout</button>
+        </form>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<main class="container main-content">
+
+  <!-- ── Featured banner (only on unfiltered homepage) ─────────────────── -->
+  <section th:if="${featured != null and !featured.isEmpty() and query == null and selectedCategoryId == null}" class="featured-section">
+    <h2 class="section-title">Featured</h2>
+    <div class="product-grid">
+      <article th:each="p : ${featured}" class="product-card featured-card">
+        <a th:href="@{/shop/product/{slug}(slug=${p.slug})}">
+          <img th:src="${p.imageUrl} ?: '/images/placeholder.png'"
+               th:alt="${p.name}" class="product-img"/>
+        </a>
+        <div class="product-info">
+          <h3 class="product-name">
+            <a th:href="@{/shop/product/{slug}(slug=${p.slug})}" th:text="${p.name}">Product</a>
+          </h3>
+          <p class="product-price" th:text="'$' + ${p.price}">$0.00</p>
+          <span class="badge badge-sale" th:if="${p.onSale}">Sale</span>
+          <span class="badge badge-oos" th:unless="${p.inStock}">Out of stock</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="shop-layout">
+
+    <!-- ── Sidebar ────────────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <h3>Categories</h3>
+      <ul class="category-list">
+        <li><a th:href="@{/shop}" th:classappend="${selectedCategoryId == null and query == null} ? 'active'">All</a></li>
+        <li th:each="cat : ${categories}">
+          <a th:href="@{/shop/category/{slug}(slug=${cat.slug})}"
+             th:text="${cat.name}"
+             th:classappend="${selectedCategoryId == cat.id} ? 'active'">Category</a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- ── Product grid ───────────────────────────────────────────────── -->
+    <section class="products-area">
+      <div th:if="${query != null}" class="search-header">
+        <p>Results for <strong th:text="${query}"></strong>
+          &mdash; <span th:text="${products.totalElements}">0</span> found</p>
+      </div>
+
+      <div th:if="${products.content.isEmpty()}" class="empty-state">
+        <p>No products found.</p>
+      </div>
+
+      <div class="product-grid" th:unless="${products.content.isEmpty()}">
+        <article th:each="p : ${products.content}" class="product-card">
+          <a th:href="@{/shop/product/{slug}(slug=${p.slug})}">
+            <img th:src="${p.imageUrl} ?: '/images/placeholder.png'"
+                 th:alt="${p.name}" class="product-img"/>
+          </a>
+          <div class="product-info">
+            <span class="product-category" th:text="${p.categoryName}">Cat</span>
+            <h3 class="product-name">
+              <a th:href="@{/shop/product/{slug}(slug=${p.slug})}" th:text="${p.name}">Name</a>
+            </h3>
+            <div class="price-row">
+              <span class="product-price" th:text="'$' + ${p.price}">$0</span>
+              <span class="compare-price"
+                    th:if="${p.comparePrice != null}"
+                    th:text="'$' + ${p.comparePrice}">$0</span>
+            </div>
+            <div class="card-badges">
+              <span class="badge badge-sale"     th:if="${p.onSale}">Sale</span>
+              <span class="badge badge-featured" th:if="${p.featured}">Featured</span>
+              <span class="badge badge-oos"      th:unless="${p.inStock}">Out of stock</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- ── Pagination ────────────────────────────────────────────────── -->
+      <nav class="pagination" th:if="${products.totalPages > 1}">
+        <a th:href="@{/shop(page=${products.page - 1}, q=${query}, category=${selectedCategoryId})}"
+           th:classappend="${products.first} ? 'disabled'"
+           class="page-link">&laquo; Prev</a>
+
+        <span th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}">
+          <a th:href="@{/shop(page=${i}, q=${query}, category=${selectedCategoryId})}"
+             th:text="${i + 1}"
+             th:classappend="${i == products.page} ? 'active'"
+             class="page-link">1</a>
+        </span>
+
+        <a th:href="@{/shop(page=${products.page + 1}, q=${query}, category=${selectedCategoryId})}"
+           th:classappend="${products.last} ? 'disabled'"
+           class="page-link">Next &raquo;</a>
+      </nav>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>&copy; 2026 Lumeo &mdash;
+      <a th:href="@{/swagger-ui.html}">API Docs</a> |
+      <a th:href="@{/h2-console}">DB Console</a>
+    </p>
+  </div>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
