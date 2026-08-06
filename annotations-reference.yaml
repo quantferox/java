@@ -1,0 +1,397 @@
+## Справочник аннотаций — Spring Boot / Java
+## [P] = есть в проекте  |  [+] = добавлено для полного покрытия
+## ─────────────────────────────────────────────────────────────
+
+# ═══════════════════════════════════════════
+# 1. SWAGGER / OPENAPI  (springdoc-openapi)
+# ═══════════════════════════════════════════
+swagger_openapi:
+  class_level:
+    - "@Tag"                  # [P] группа эндпоинтов (имя контроллера в UI)
+    - "@SecurityScheme"       # [P] объявляет схему безопасности (JWT, Basic...)
+    - "@SecurityRequirement"  # [P] требует авторизации для класса/метода
+  method_level:
+    - "@Operation"            # [P] описание HTTP-метода
+  parameter_level:
+    - "@Parameter"            # [+] описание параметра метода (@PathVariable и т.д.)
+  response_level:
+    - "@ApiResponse"          # [+] описание конкретного HTTP-ответа (200, 404...)
+    - "@ApiResponses"         # [+] контейнер для нескольких @ApiResponse
+  schema_level:
+    - "@Schema"               # [+] описание DTO / поля в документации
+
+
+# ═══════════════════════════════════════════
+# 2. SPRING CORE / КОНТЕКСТ
+# ═══════════════════════════════════════════
+spring_core:
+  stereotypes:
+    - "@Component"              # [P] базовый Spring-компонент
+    - "@Service"                # [P] сервисный слой
+    - "@Repository"             # [P] слой доступа к данным
+    - "@Controller"             # [P] MVC-контроллер (возвращает View)
+    - "@RestController"         # [P] @Controller + @ResponseBody
+    - "@Configuration"          # [P] класс с @Bean-определениями
+    - "@ControllerAdvice"       # [P] глобальный обработчик для контроллеров
+    - "@RestControllerAdvice"   # [P] @ControllerAdvice + @ResponseBody
+  bean_lifecycle:
+    - "@Bean"                   # [P] объявляет Spring-бин внутри @Configuration
+    - "@Autowired"              # [P] внедрение зависимости (лучше через конструктор)
+    - "@Qualifier"              # [+] выбрать конкретный бин при нескольких реализациях
+    - "@Primary"                # [+] бин по умолчанию при нескольких кандидатах
+    - "@Lazy"                   # [+] ленивая инициализация бина
+    - "@Scope"                  # [+] область видимости бина (singleton, prototype...)
+    - "@PostConstruct"          # [+] вызывается после внедрения всех зависимостей
+    - "@PreDestroy"             # [+] вызывается перед уничтожением бина
+  configuration:
+    - "@ConfigurationProperties"  # [P] биндинг application.properties на POJO
+    - "@EnableAsync"              # [P] включает асинхронное выполнение
+    - "@EnableCaching"            # [P] включает кэширование
+    - "@EnableScheduling"         # [P] включает планировщик задач
+    - "@EnableJpaAuditing"        # [P] включает аудит JPA
+    - "@EnableWebSecurity"        # [P] кастомная конфигурация Spring Security
+    - "@EnableMethodSecurity"     # [P] разрешает @PreAuthorize на методах
+    - "@SpringBootApplication"    # [P] точка входа Boot-приложения
+    - "@PropertySource"           # [+] подключить дополнительный .properties файл
+    - "@Profile"                  # [+] бин активен только на определённом профиле
+    - "@Conditional"              # [+] бин создаётся только при условии
+    - "@ConditionalOnProperty"    # [+] бин создаётся если свойство задано/равно значению
+    - "@ConditionalOnMissingBean" # [+] бин создаётся только если другой бин отсутствует
+    - "@Import"                   # [+] явный импорт другого @Configuration-класса
+
+
+# ═══════════════════════════════════════════
+# 3. SPRING WEB MVC
+# ═══════════════════════════════════════════
+spring_web:
+  mapping:
+    - "@RequestMapping"     # [P] базовый URL-маппинг класса или метода
+    - "@GetMapping"         # [P] HTTP GET
+    - "@PostMapping"        # [P] HTTP POST
+    - "@PutMapping"         # [P] HTTP PUT
+    - "@PatchMapping"       # [P] HTTP PATCH
+    - "@DeleteMapping"      # [P] HTTP DELETE
+  params_and_body:
+    - "@PathVariable"       # [P] переменная из URL-пути  /users/{id}
+    - "@RequestParam"       # [P] query-параметр  ?page=0
+    - "@RequestBody"        # [+] тело запроса (JSON → объект)
+    - "@RequestHeader"      # [+] значение HTTP-заголовка
+    - "@CookieValue"        # [+] значение Cookie
+    - "@ModelAttribute"     # [+] биндинг формы / объект из Model (MVC)
+    - "@Valid"              # [P] запуск Bean Validation на параметре/поле
+    - "@Validated"          # [P] @Valid + поддержка групп валидации
+  response:
+    - "@ResponseStatus"     # [P] HTTP-статус ответа метода
+    - "@ResponseBody"       # [+] возвращаемое значение сериализуется в тело ответа
+  exceptions:
+    - "@ExceptionHandler"   # [P] метод-обработчик конкретного исключения
+  security_context:
+    - "@AuthenticationPrincipal" # [P] инжектирует текущего аутентифицированного пользователя
+  cross_origin:
+    - "@CrossOrigin"        # [+] разрешает CORS для класса или метода
+
+
+# ═══════════════════════════════════════════
+# 4. SPRING CACHE
+# ═══════════════════════════════════════════
+spring_cache:
+  - "@Cacheable"            # [P] кэшировать результат метода
+  - "@CacheEvict"           # [P] удалить запись из кэша
+  - "@CachePut"             # [+] обновить запись в кэше (метод всегда выполняется)
+  - "@Caching"              # [P] объединить несколько кэш-аннотаций
+  - "@CacheConfig"          # [+] задать cacheNames/cacheManager на уровне класса
+
+# ═══════════════════════════════════════════
+# 5. SPRING ASYNC / SCHEDULING
+# ═══════════════════════════════════════════
+spring_async_scheduling:
+  - "@Async"                # [P] выполнить метод асинхронно (в другом потоке)
+  - "@Scheduled"            # [P] выполнить метод по расписанию (cron / fixedRate)
+
+# ═══════════════════════════════════════════
+# 6. SPRING SECURITY
+# ═══════════════════════════════════════════
+spring_security:
+  - "@EnableWebSecurity"    # [P] (также в spring_core)
+  - "@EnableMethodSecurity" # [P] (также в spring_core)
+  - "@PreAuthorize"         # [P] проверка роли/SpEL до вызова метода
+  - "@PostAuthorize"        # [+] проверка SpEL после вызова (на возвращаемом значении)
+  - "@PreFilter"            # [+] фильтрует входную коллекцию по SpEL
+  - "@PostFilter"           # [+] фильтрует возвращаемую коллекцию по SpEL
+  - "@Secured"              # [+] ограничение по роли (упрощённый вариант @PreAuthorize)
+  - "@RolesAllowed"         # [+] JSR-250 аналог @Secured (jakarta.annotation.security)
+  - "@PermitAll"            # [+] JSR-250 разрешить всем
+  - "@DenyAll"              # [+] JSR-250 запретить всем
+  - "@WithMockUser"         # [+] в тестах — создать мок-пользователя с ролью
+
+
+# ═══════════════════════════════════════════
+# 7. SPRING DATA JPA  (репозитории)
+# ═══════════════════════════════════════════
+spring_data_jpa:
+  - "@Repository"             # [P] (также в spring_core)
+  - "@Query"                  # [P] кастомный JPQL/SQL запрос
+  - "@Param"                  # [P] именованный параметр в @Query
+  - "@Modifying"              # [P] помечает @Query как UPDATE/DELETE
+  - "@Transactional"          # [P] управление транзакцией (Spring)
+  - "@Lock"                   # [+] тип блокировки (PESSIMISTIC_WRITE и т.д.)
+  - "@EntityGraph"            # [+] загрузить связанные сущности за один запрос (избегать N+1)
+  - "@NoRepositoryBean"       # [+] базовый интерфейс репозитория — не создавать бин
+
+# ═══════════════════════════════════════════
+# 8. JPA / HIBERNATE  (сущности)
+# ═══════════════════════════════════════════
+jpa_hibernate:
+  entity_definition:
+    - "@Entity"               # [P] JPA-сущность
+    - "@Table"                # [P] настройка таблицы (name, uniqueConstraints, indexes)
+    - "@MappedSuperclass"     # [P] базовый класс-шаблон сущности, сам не таблица
+    - "@Embeddable"           # [+] класс встраивается как часть другой сущности
+    - "@Embedded"             # [+] поле, тип которого помечен @Embeddable (вставить объект в таблицу)
+    - "@EmbeddedId"           # [+] составной первичный ключ через @Embeddable-класс
+    - "@EntityListeners"      # [P] слушатели событий сущности (аудит)
+    - "@NamedQuery"           # [+] именованный JPQL-запрос, объявленный на сущности
+  id_and_columns:
+    - "@Id"                   # [P] первичный ключ
+    - "@GeneratedValue"       # [P] стратегия генерации PK (AUTO, IDENTITY, SEQUENCE...)
+    - "@SequenceGenerator"    # [+] настройка sequence для @GeneratedValue(SEQUENCE)
+    - "@Column"               # [P] настройка колонки (name, nullable, length, unique)
+    - "@Lob"                  # [P] большой объект (CLOB/BLOB)
+    - "@Version"              # [P] оптимистическая блокировка
+    - "@Enumerated"           # [P] маппинг enum → STRING или ORDINAL
+    - "@Transient"            # [+] поле НЕ маппится на колонку
+    - "@Formula"              # [+] Hibernate: вычисляемое поле через SQL-выражение
+    - "@Type"                 # [+] Hibernate: кастомный UserType
+  constraints:
+    - "@UniqueConstraint"     # [P] уникальное ограничение на уровне таблицы
+    - "@Index"                # [P] индекс на уровне таблицы
+    - "@Check"                # [+] CHECK-ограничение на уровне таблицы
+  relations:
+    - "@OneToOne"             # [+] связь один-к-одному
+    - "@OneToMany"            # [P] связь один-ко-многим
+    - "@ManyToOne"            # [P] связь многие-к-одному
+    - "@ManyToMany"           # [+] связь многие-ко-многим
+    - "@JoinColumn"           # [P] столбец внешнего ключа
+    - "@JoinTable"            # [+] промежуточная таблица для @ManyToMany
+    - "@OrderBy"              # [+] сортировка коллекции при загрузке
+  lifecycle_callbacks:
+    - "@PrePersist"           # [P] вызывается перед INSERT
+    - "@PostPersist"          # [+] вызывается после INSERT
+    - "@PreUpdate"            # [+] вызывается перед UPDATE
+    - "@PostUpdate"           # [+] вызывается после UPDATE
+    - "@PreRemove"            # [+] вызывается перед DELETE
+    - "@PostRemove"           # [+] вызывается после DELETE
+    - "@PostLoad"             # [+] вызывается после загрузки сущности из БД
+  auditing:
+    - "@CreatedDate"          # [P] дата создания (Spring Data Auditing)
+    - "@LastModifiedDate"     # [P] дата обновления (Spring Data Auditing)
+    - "@CreatedBy"            # [+] кто создал запись
+    - "@LastModifiedBy"       # [+] кто последний обновил запись
+
+
+# ═══════════════════════════════════════════
+# 9. JAKARTA BEAN VALIDATION
+# ═══════════════════════════════════════════
+bean_validation:
+  nullability:
+    - "@NotNull"              # [P] поле не null
+    - "@NotBlank"             # [P] строка не null и не пустая (без пробелов)
+    - "@NotEmpty"             # [P] строка/коллекция не null и не пустая
+    - "@Null"                 # [P] поле должно быть null
+  numeric:
+    - "@Min"                  # [P] минимальное числовое значение
+    - "@Max"                  # [+] максимальное числовое значение
+    - "@DecimalMin"           # [P] минимальное decimal-значение
+    - "@DecimalMax"           # [+] максимальное decimal-значение
+    - "@Digits"               # [P] ограничение на кол-во цифр (integer + fraction)
+    - "@Positive"             # [P] число > 0
+    - "@PositiveOrZero"       # [+] число >= 0
+    - "@Negative"             # [+] число < 0
+    - "@NegativeOrZero"       # [+] число <= 0
+  string:
+    - "@Size"                 # [P] длина строки/коллекции (min, max)
+    - "@Email"                # [P] валидный e-mail адрес
+    - "@Pattern"              # [+] строка соответствует регулярному выражению
+  date_time:
+    - "@Past"                 # [+] дата в прошлом
+    - "@PastOrPresent"        # [+] дата в прошлом или сейчас
+    - "@Future"               # [+] дата в будущем
+    - "@FutureOrPresent"      # [+] дата в будущем или сейчас
+  custom:
+    - "@Constraint"           # [+] создать свою кастомную аннотацию-валидатор
+    - "@GroupSequence"        # [+] порядок выполнения групп валидации
+
+# ═══════════════════════════════════════════
+# 10. LOMBOK
+# ═══════════════════════════════════════════
+lombok:
+  class_level:
+    - "@Data"                    # [P] @Getter + @Setter + @ToString + @EqualsAndHashCode + @RequiredArgsConstructor
+    - "@Value"                   # [+] @Data для неизменяемого класса (все поля final)
+    - "@Builder"                 # [P] паттерн Builder
+    - "@SuperBuilder"            # [+] Builder с поддержкой наследования
+    - "@Getter"                  # [P] генерирует геттеры
+    - "@Setter"                  # [P] генерирует сеттеры
+    - "@ToString"                # [+] переопределяет toString()
+    - "@EqualsAndHashCode"       # [+] переопределяет equals() и hashCode()
+    - "@NoArgsConstructor"       # [P] конструктор без аргументов
+    - "@AllArgsConstructor"      # [P] конструктор со всеми полями
+    - "@RequiredArgsConstructor" # [P] конструктор для final / @NonNull полей
+    - "@Slf4j"                   # [P] инжектирует log = LoggerFactory.getLogger(...)
+    - "@Log4j2"                  # [+] инжектирует Log4j2 логгер
+    - "@NonNull"                 # [P] генерирует null-check в конструкторе/методе
+  field_level:
+    - "@Accessors"               # [+] цепочка сеттеров (fluent / chain)
+    - "@With"                    # [+] генерирует withField(...) — копия с изменённым полем
+  utility:
+    - "@UtilityClass"            # [+] final-класс с private-конструктором (утилиты)
+    - "@SneakyThrows"            # [+] бросить checked-исключение без объявления
+
+
+# ═══════════════════════════════════════════
+# 11. MAPSTRUCT
+# ═══════════════════════════════════════════
+mapstruct:
+  - "@Mapper"               # [P] интерфейс-маппер (componentModel = "spring")
+  - "@Mapping"              # [P] маппинг конкретного поля source → target
+  - "@Mappings"             # [+] контейнер для нескольких @Mapping
+  - "@MappingTarget"        # [P] параметр, в который идёт обновление (update-методы)
+  - "@BeanMapping"          # [P] настройки всего маппинга (nullValuePropertyMappingStrategy)
+  - "@InheritConfiguration" # [+] унаследовать конфиг маппинга от другого метода
+  - "@InheritInverseConfiguration" # [+] обратный маппинг (target → source) без дублирования
+  - "@ValueMapping"         # [+] маппинг значений enum
+  - "@Named"                # [+] именованный квалификатор для метода-трансформатора
+  - "@Qualifier"            # [+] MapStruct: выбор конкретного метода маппинга
+
+# ═══════════════════════════════════════════
+# 12. JACKSON  (JSON-сериализация)
+# ═══════════════════════════════════════════
+jackson:
+  serialization:
+    - "@JsonInclude"          # [P] исключить null/empty поля из JSON
+    - "@JsonProperty"         # [+] задать имя поля в JSON
+    - "@JsonAlias"            # [+] альтернативные имена при десериализации
+    - "@JsonIgnore"           # [+] исключить поле из сериализации/десериализации
+    - "@JsonIgnoreProperties" # [+] исключить несколько полей на уровне класса
+    - "@JsonFormat"           # [+] формат даты/числа при сериализации
+    - "@JsonSerialize"        # [+] кастомный сериализатор для поля/класса
+    - "@JsonDeserialize"      # [+] кастомный десериализатор для поля/класса
+  polymorphism:
+    - "@JsonTypeInfo"         # [+] включить информацию о типе в JSON (полиморфизм)
+    - "@JsonSubTypes"         # [+] перечислить подтипы для @JsonTypeInfo
+  naming:
+    - "@JsonNaming"           # [+] стратегия именования полей (snake_case и т.д.)
+  other:
+    - "@JsonCreator"          # [+] указать конструктор/фабрику для десериализации
+    - "@JsonValue"            # [+] сериализовать объект как значение одного поля
+    - "@JsonManagedReference" # [+] двунаправленная связь — родительская сторона
+    - "@JsonBackReference"    # [+] двунаправленная связь — дочерняя сторона (не сериализуется)
+
+
+# ═══════════════════════════════════════════
+# 13. SPRING EVENTS
+# ═══════════════════════════════════════════
+spring_events:
+  - "@EventListener"          # [P] метод-слушатель доменного события
+  - "@TransactionalEventListener" # [+] слушатель, срабатывающий после коммита транзакции
+
+# ═══════════════════════════════════════════
+# 14. SPRING ACTUATOR / METRICS
+# ═══════════════════════════════════════════
+spring_actuator:
+  - "@Endpoint"               # [+] кастомный Actuator-эндпоинт
+  - "@ReadOperation"          # [+] GET-операция кастомного эндпоинта
+  - "@WriteOperation"         # [+] POST-операция кастомного эндпоинта
+  - "@DeleteOperation"        # [+] DELETE-операция кастомного эндпоинта
+  - "@Timed"                  # [+] Micrometer: измерение времени выполнения метода
+  - "@Counted"                # [+] Micrometer: счётчик вызовов метода
+
+# ═══════════════════════════════════════════
+# 15. ТЕСТИРОВАНИЕ
+# ═══════════════════════════════════════════
+testing:
+  junit5:
+    - "@Test"                       # [P] тестовый метод
+    - "@BeforeEach"                 # [P] выполняется перед каждым тестом
+    - "@AfterEach"                  # [+] выполняется после каждого теста
+    - "@BeforeAll"                  # [+] выполняется один раз перед всеми тестами (static)
+    - "@AfterAll"                   # [+] выполняется один раз после всех тестов (static)
+    - "@DisplayName"                # [P] человекочитаемое имя теста
+    - "@ExtendWith"                 # [P] расширение JUnit 5 (MockitoExtension и т.д.)
+    - "@Nested"                     # [+] вложенный класс тестов для группировки
+    - "@ParameterizedTest"          # [+] тест с несколькими наборами данных
+    - "@ValueSource"                # [+] источник значений для @ParameterizedTest
+    - "@CsvSource"                  # [+] CSV-данные для @ParameterizedTest
+    - "@MethodSource"               # [+] метод как источник данных для @ParameterizedTest
+    - "@EnumSource"                 # [+] enum как источник данных для @ParameterizedTest
+    - "@Timeout"                    # [+] тест упадёт если выполняется дольше N секунд
+    - "@Disabled"                   # [+] пропустить тест / класс тестов
+    - "@Tag"                        # [+] тег для группировки и фильтрации тестов
+    - "@RepeatedTest"               # [+] запустить тест N раз
+  mockito:
+    - "@Mock"                       # [P] создать мок
+    - "@InjectMocks"                # [P] инжектировать моки в тестируемый класс
+    - "@Spy"                        # [+] частичный мок (реальные методы + возможность override)
+    - "@Captor"                     # [+] ArgumentCaptor для захвата аргументов вызова
+    - "@MockitoSettings"            # [+] настройки Mockito (strictness и т.д.)
+  spring_test:
+    - "@SpringBootTest"             # [P] поднять полный Application Context
+    - "@WebMvcTest"                 # [+] поднять только веб-слой (без сервисов/БД)
+    - "@DataJpaTest"                # [+] поднять только JPA-слой (in-memory DB)
+    - "@DataRedisTest"              # [+] поднять только Redis-слой
+    - "@RestClientTest"             # [+] тест REST-клиента (RestTemplate/WebClient)
+    - "@AutoConfigureMockMvc"       # [P] автоматически конфигурирует MockMvc
+    - "@AutoConfigureWebTestClient" # [+] настраивает WebTestClient (reactive)
+    - "@MockBean"                   # [+] заменить бин в контексте на мок
+    - "@SpyBean"                    # [+] обернуть бин в Spy
+    - "@ActiveProfiles"             # [P] активный профиль для теста
+    - "@Sql"                        # [P] выполнить SQL-скрипт до/после теста
+    - "@DynamicPropertySource"      # [P] переопределить properties (Testcontainers)
+    - "@Transactional"              # [P] откатить транзакцию после теста
+    - "@Rollback"                   # [+] управление откатом транзакции в тесте
+    - "@TestPropertySource"         # [+] задать properties специально для теста
+  testcontainers:
+    - "@Testcontainers"             # [P] включить поддержку Testcontainers
+    - "@Container"                  # [P] поле с Docker-контейнером
+
+
+# ═══════════════════════════════════════════
+# 16. JAVA СТАНДАРТНЫЕ (java.lang / jakarta)
+# ═══════════════════════════════════════════
+java_standard:
+  core:
+    - "@Override"             # [P] переопределение метода суперкласса/интерфейса
+    - "@Deprecated"           # [+] метод/класс устарел
+    - "@SuppressWarnings"     # [+] подавить предупреждение компилятора
+    - "@FunctionalInterface"  # [+] интерфейс с одним абстрактным методом (лямбды)
+    - "@SafeVarargs"          # [+] подавить unchecked-предупреждение для varargs generics
+
+# ═══════════════════════════════════════════
+# 17. SPRING RETRY
+# ═══════════════════════════════════════════
+spring_retry:
+  - "@EnableRetry"            # [+] включить механизм повторных попыток
+  - "@Retryable"              # [+] метод будет повторён при заданном исключении
+  - "@Recover"                # [+] метод-fallback после исчерпания попыток
+  - "@CircuitBreaker"         # [+] паттерн Circuit Breaker через Spring Retry
+
+# ═══════════════════════════════════════════
+# 18. SPRING FEIGN / HTTP-КЛИЕНТЫ
+# ═══════════════════════════════════════════
+feign_http_clients:
+  - "@FeignClient"            # [+] декларативный HTTP-клиент (OpenFeign)
+  - "@EnableFeignClients"     # [+] включить сканирование @FeignClient
+
+# ═══════════════════════════════════════════
+# 19. JAKARTA / JEE СТАНДАРТНЫЕ
+# ═══════════════════════════════════════════
+jakarta_standard:
+  - "@PostConstruct"          # [+] (также в spring_core) вызов после инициализации бина
+  - "@PreDestroy"             # [+] (также в spring_core) вызов перед уничтожением бина
+  - "@Resource"               # [+] внедрение зависимости по имени (JSR-250)
+
+# ═══════════════════════════════════════════
+# ЛЕГЕНДА
+# ═══════════════════════════════════════════
+# [P]  — аннотация используется в текущем проекте (lumeo)
+# [+]  — добавлена для полного покрытия типовой Spring Boot разработки
