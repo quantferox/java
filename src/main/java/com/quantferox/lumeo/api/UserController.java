@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +46,7 @@ public class UserController {
     return ResponseEntity.ok(userService.findByUsername(principal.getUsername()));
   }
 
+  @Scope("singleton")
   @GetMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   @Operation(summary = "Get user by ID (ADMIN)")
